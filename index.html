@@ -1,0 +1,118 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Trabajo 07 javascript escenario</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="text/javascript">
+
+        var config = {
+            type: Phaser.AUTO,
+            width: 1280,
+            height: 720,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            },
+
+        };  
+
+        var player;
+        var score = 0;
+        var scoreText;
+        var spd = 550;
+
+        var game = new Phaser.Game(config);
+
+
+        function preload ()
+        {
+            this.load.image('bg', 'assets/fondo.jpg');
+            this.load.image('star', 'assets/star.png');
+            this.load.image('personaje', 'assets/personaje.png');
+        }
+
+        function create ()
+        {
+            BG = this.add.tileSprite(400, 400,1920,1080, 'bg'); 
+            BG = this.add.tileSprite(-1520, 400,1920,1080, 'bg');
+            BG = this.add.tileSprite(2320, 400,1920,1080, 'bg');
+            BG = this.add.tileSprite(400, 1480,1920,1080, 'bg');
+            BG = this.add.tileSprite(400, -680,1920,1080, 'bg');
+            BG = this.add.tileSprite(-1520, 1480,1920,1080, 'bg');
+            BG = this.add.tileSprite(-1520, -680,1920,1080, 'bg');
+            BG = this.add.tileSprite(2320, 1480,1920,1080, 'bg');
+            BG = this.add.tileSprite(2320, -680,1920,1080, 'bg');
+
+            var customBounds = new Phaser.Geom.Rectangle(400, 400, 30, 30);
+
+            player = this.physics.add.sprite(400, 450, 'personaje');
+            var cursor = this.add.image(0, 0, 'personaje').setVisible(false);
+
+            stars = this.physics.add.group({
+                key: 'star',
+                repeat: 400,
+                setXY: { x: 12, y: 0 }
+            });
+
+            stars.children.iterate(function (child) {
+
+            child.setY(Phaser.Math.Between(-1250, 1920));
+            child.setX(Phaser.Math.Between(-2410, 3200));
+
+            });
+
+            this.physics.add.overlap(player, stars, collectStar, null, this);
+            scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#999' });
+
+            this.cameras.main.startFollow(player);
+            cursors = this.input.keyboard.createCursorKeys();
+        }
+
+        function update ()
+        {            
+            player.setVelocityX(0);
+            player.setVelocityY(0);
+
+            if (cursors.left.isDown){
+                player.setVelocityX(-spd);
+                }
+            else if (cursors.right.isDown) 
+                player.setVelocityX(spd);
+
+            if (cursors.up.isDown){
+                player.setVelocityY(-spd);
+            }
+            else if (cursors.down.isDown)
+                player.setVelocityY(spd);
+        }
+
+        function collectStar (player, star)
+        {
+            star.disableBody(true, true);
+            score += 10;
+            scoreText.setText('Score: ' + score);
+            if (score == 2000)
+            {
+                player.setTint(0x00FF00);
+                this.physics.pause();
+            }
+        }
+    </script>
+</body>
+</html>
